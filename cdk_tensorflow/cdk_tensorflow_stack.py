@@ -4,7 +4,7 @@ from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_efs as efs
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
-from aws_cdk import aws_s3_deployment
+from aws_cdk import aws_s3_deployment as s3_deployment
 from constructs import Construct
 
 
@@ -12,11 +12,13 @@ class CdkTensorflowStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # Let's list all of our physical resources getting deployed
         self.vpc = None
         self.access_point = None
         self.prediction_lambda = None
         self.models_bucket = None
 
+        # convenient deployment
         self.build_infrastructure()
 
     def build_infrastructure(self):
@@ -27,6 +29,7 @@ class CdkTensorflowStack(Stack):
         self.build_function_url()
 
     def build_vpc(self):
+        # Need the VPC for the lambda filesystem
         self.vpc = ec2.Vpc(scope=self, id="VPC", vpc_name="ExampleVPC")
 
     def build_filesystem(self):
@@ -58,13 +61,16 @@ class CdkTensorflowStack(Stack):
             code=_lambda.DockerImageCode.from_image_asset(
                 directory="lambda_funcs/TensorflowLambda"
             ),
+            # I've found inferences can be made with my simple model in < 20 sec
             timeout=Duration.seconds(60 * 0.5),
             memory_size=128 * 6 * 1,  # mb
+            # Attach the EFS file system
             filesystem=_lambda.FileSystem.from_efs_access_point(
                 ap=self.access_point, mount_path="/mnt/models"
             )
             if self.access_point
             else None,
+            # Needs to be placed in the same VPC as the EFS file system
             vpc=self.vpc,
         )
 
@@ -72,17 +78,19 @@ class CdkTensorflowStack(Stack):
         self.models_bucket = s3.Bucket(
             scope=self,
             id="ModelsBucket",
-            versioned=True,
             bucket_name="models-bucket",
+            # These settings will make sure things get deleted when we take down the stack
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
         )
-        aws_s3_deployment.BucketDeployment(
+        # We can add files to our new bucket from a local source
+        s3_deployment.BucketDeployment(
             self,
             "database_for_lex_lambda",
-            sources=[aws_s3_deployment.Source.asset("model_files")],
-            destination_bucket=self.my_bucket,
+            sources=[s3_deployment.Source.asset("model_files")],
+            destination_bucket=self.models_bucket,
         )
+        # Make sure to give the lambda permission to retrieve the model file
         self.models_bucket.grant_read(identity=self.prediction_lambda)
 
     def build_function_url(self):
