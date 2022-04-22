@@ -7,6 +7,8 @@ To allow us to deploy a Tensorflow model on Lambda, I will pull concepts togethe
 -   To get prediction results, we will use [Lambda function URLs](https://dev.to/wesleycheek/aws-lambda-function-urls-with-aws-cdk-58ih) to expose an HTTPS endpoint we can query using HTTP GET ([another option is to use an API Gateway](https://dev.to/wesleycheek/deploy-an-api-fronted-lambda-function-using-aws-cdk-2nch)).
 -   [To save and load our models](https://dev.to/wesleycheek/saveload-tensorflow-sklearn-pipelines-from-local-and-aws-s3-34dc), we will use Joblib.
 
+The [Dev.to article can be found here](https://dev.to/wesleycheek/put-a-tensorflow-model-into-production-with-aws-lambda-and-aws-cdk-1jg6).
+
 ## If starting from scratch (not cloning this project)
 
 1) `mkdir project && cd project`

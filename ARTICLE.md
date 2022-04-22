@@ -265,3 +265,5 @@ The data shown below is "hello!" - for you it could be anything. My models would
 ![image-20220422101530720](D:\Projects\Notes\My Articles\5_CDK_Tensorflow\Assets\image-20220422101530720.png)
 
 Once you’re finished make sure to `cdk destroy` to avoid any charges!
+
+I hope this article has given you a good start to deploying your neural network or other machine learning algorithm with Lambda.
