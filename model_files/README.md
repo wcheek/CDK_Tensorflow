@@ -1,0 +1,3 @@
+These models have been saved using `joblib` and thus must be loaded using `joblib`. Please see [this article](https://dev.to/wesleycheek/saveload-tensorflow-sklearn-pipelines-from-local-and-aws-s3-34dc)
+
+Also note that in the past I have had trouble loading these models when they have been built on a different machine. If you see issues like `NotFoundError` this may be your issue. I suggest building a separate Lambda which will retrain and save your model - this is what worked for me.
