@@ -1,3 +1,4 @@
 joblib
-tensorflow
+# I use tensorflow-cpu because it's half the size of the gpu version and Lambda doesn't have a GPU anyway.
+tensorflow-cpu
 boto3

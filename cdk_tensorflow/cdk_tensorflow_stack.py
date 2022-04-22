@@ -77,8 +77,8 @@ class CdkTensorflowStack(Stack):
     def build_bucket(self):
         self.models_bucket = s3.Bucket(
             scope=self,
-            id="ModelsBucket",
-            bucket_name="models-bucket",
+            id="ExampleModelsBucket",
+            bucket_name="example-models-bucket",
             # These settings will make sure things get deleted when we take down the stack
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
@@ -86,7 +86,7 @@ class CdkTensorflowStack(Stack):
         # We can add files to our new bucket from a local source
         s3_deployment.BucketDeployment(
             self,
-            "database_for_lex_lambda",
+            "save_model_to_s3",
             sources=[s3_deployment.Source.asset("model_files")],
             destination_bucket=self.models_bucket,
         )

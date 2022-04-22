@@ -17,6 +17,7 @@ def get_model() -> Tuple:
             model = joblib.load(f)
     except FileNotFoundError:
         client = boto3.client("s3")
+        # Save model to EFS
         client.download_file(
             "models-bucket",
             "model.tensorflow",
@@ -35,11 +36,12 @@ model = get_model()
 
 def get_prediction(model, input_data):
     # Do what you need to do to feed input data to your model
-    ...
+    return 1
     # return output_data
 
 
 def handler(event, context):
+    # This is the data we get from the client query
     data = event["queryStringParameters"]["q"]
     # I pass the data as a list to the API, but it gets converted into a string.
     # This is some fancy way to get back the list from the str(list)
@@ -51,6 +53,7 @@ def handler(event, context):
     )
     assert isinstance(formatted_data, list)
 
+    # Get a prediction by feeding your formatted input data into model
     prediction = get_prediction(model=model, input_data=formatted_data)
     response = {
         "isBase64Encoded": False,
@@ -58,7 +61,7 @@ def handler(event, context):
         "headers": {
             "Access-Control-Allow-Origin": "*",
         },
-        "body": (f"The predicted value is {prediction}"),
+        "body": f"The predicted value is {prediction}",
     }
 
     return response
