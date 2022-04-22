@@ -19,7 +19,7 @@ def get_model() -> Tuple:
         client = boto3.client("s3")
         # Save model to EFS
         client.download_file(
-            "models-bucket",
+            "example-models-bucket",
             "model.tensorflow",
             str(local_path),
         )

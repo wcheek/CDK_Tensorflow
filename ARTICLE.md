@@ -95,7 +95,7 @@ class CdkTensorflowStack(Stack):
     def build_bucket(self):
         self.models_bucket = s3.Bucket(
             scope=self,
-            id="ModelsBucket",
+            id="ExampleModelsBucket",
             bucket_name="models-bucket",
             # These settings will make sure things get deleted when we take down the stack
             removal_policy=RemovalPolicy.DESTROY,
@@ -153,6 +153,7 @@ class CdkTensorflowStack(Stack):
 Again, trying to show a minimum working example. This Lambda function will try to load the model from the EFS. If it can’t be found (like on first run), it copies the model from the S3 bucket we created, saves it to EFS, and loads it again. Once we have the model loaded we can use it to make inferences. The handler will send the inference back to the client which queried it.
 
 ```python
+# import tempfile
 from pathlib import Path
 from typing import Tuple
 
@@ -190,7 +191,7 @@ model = get_model()
 
 def get_prediction(model, input_data):
     # Do what you need to do to feed input data to your model
-    ...
+    return 1
     # return output_data
 
 
@@ -255,7 +256,7 @@ We can run `cdk deploy` and our infrastructure will get autmatically deployed. A
 
 ## Testing & Querying the Lambda function
 
-Testing will depend on your model. I hope I have given you enough of an outline to get started. To send data to your newly deployed lambda function, you can find the Function URL either in the outputs after CDK has finished deploying or on the AWS L.
+Testing will depend on your model. I hope I have given you enough of an outline to get started. To send data to your newly deployed lambda function, you can find the Function URL either in the outputs after CDK has finished deploying or on the AWS Lambda console.
 
 ![image-20220422101510034](D:\Projects\Notes\My Articles\5_CDK_Tensorflow\Assets\image-20220422101510034.png)
 
